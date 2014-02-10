@@ -40,7 +40,7 @@ app.post('/tiles/:zoom/:x/:y.png', function(req, res) {
   map.addData({
     sourceName: "data", // for the stylesheet to use
     getShapes: function(minX, minY, maxX, maxY, mapProjection) {
-      return projector.project.FeatureCollection("EPSG:4326", mapProjection, data);
+      return projector.project[data.type]("EPSG:4326", mapProjection, data);
     }
   });
   
