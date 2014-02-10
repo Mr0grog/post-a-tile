@@ -1,22 +1,125 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<title>Post-a-Tile</title>
+	<style type="text/css">
+		html, body {
+			width: 100%;
+			min-height: 100%;
+			margin: 0;
+			background: #eee;
+			font-family: helvetica, arial, sans-serif;
+		}
+		
+		#container {
+			margin: 1em;
+		}
+		
+		#data {
+			width: 90%;
+		}
+		
+		label {
+			display: block;
+			margin: 0 0 1em;
+		}
+		
+		#output {
+			margin: 1em 0;
+			width: 256px;
+			height: 256px;
+			border: 1px solid #666;
+			background: url("http://d.tiles.mapbox.com/v3/tmcw.map-7s15q36b/12/1192/1551.png");
+		}
+	</style>
 </head>
 <body>
-	<form method="POST" action="/tiles/12/1192/1551.png">
-		<textarea name="data">
-			{
-				"type": "FeatureCollection",                                
-				"features": [
-					{ "type": "Feature", "properties": { "DC_NUM": "014848", "DC_KEY": "201001014848", "LOCATION_B": "2100 BLOCK S BROAD ST", "THEFT_DATE": "2010\/04\/16", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 150, "THEFT_HOUR": 0, "UCR": 625, "LAT": 39.9242733, "LNG": -75.169775454 }, "geometry": { "type": "Point", "coordinates": [ -75.169775453999989, 39.924273321000044 ] } },
-					{ "type": "Feature", "properties": { "DC_NUM": "016330", "DC_KEY": "201001016330", "LOCATION_B": "S 2100 MCKEAN ST", "THEFT_DATE": "2010\/04\/24", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 215, "THEFT_HOUR": 17, "UCR": 615, "LAT": 39.9270745, "LNG": -75.180905401 }, "geometry": { "type": "Point", "coordinates": [ -75.180905400999961, 39.927074527000059 ] } },
-					{ "type": "Feature", "properties": { "DC_NUM": "023568", "DC_KEY": "201001023568", "LOCATION_B": "2700 BLOCK SNYDER AVE", "THEFT_DATE": "2010\/06\/06", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 120, "THEFT_HOUR": 11, "UCR": 625, "LAT": 39.9271197, "LNG": -75.191034151 }, "geometry": { "type": "Point", "coordinates": [ -75.19103415099994, 39.927119746000074 ] } },
-					{ "type": "Feature", "properties": { "DC_NUM": "028556", "DC_KEY": "201001028556", "LOCATION_B": "2100 BLOCK S GARNET ST", "THEFT_DATE": "2010\/07\/08", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 200, "THEFT_HOUR": 15, "UCR": 615, "LAT": 39.9254113, "LNG": -75.178257356 }, "geometry": { "type": "Point", "coordinates": [ -75.178257355999961, 39.925411335000035 ] } },
-					{ "type": "Feature", "properties": { "DC_NUM": "029047", "DC_KEY": "201001029047", "LOCATION_B": "2100 BLOCK S 15TH ST", "THEFT_DATE": "2010\/07\/11", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 75, "THEFT_HOUR": 11, "UCR": 625, "LAT": 39.9241409, "LNG": -75.171456936 }, "geometry": { "type": "Point", "coordinates": [ -75.17145693599997, 39.924140875000035 ] } }
-				]
+	<div id="container">
+		<h1>Upload some GeoJSON, get back a rendered tile.</h1>
+		
+		<p>
+			Some quick notes: this is a rather quick-and-simple example. You must upload
+			GeoJSON data and it must be in WGS84 (latitude/longitude). This service could
+			be smarter and handler more formats, but it's not.
+		</p>
+		
+		<form method="POST" action="/tiles/12/1192/1551.png" id="upload-form">
+			<label>Upload a GeoJSON file
+				<input type="file" id="uploaded-file" />
+			</label>
+			
+			<label>Paste in some GeoJSON
+				<textarea name="data" id="data" rows="5">
+{
+	"type": "FeatureCollection",                                
+	"features": [
+		{ "type": "Feature", "properties": { "DC_NUM": "014848", "DC_KEY": "201001014848", "LOCATION_B": "2100 BLOCK S BROAD ST", "THEFT_DATE": "2010\/04\/16", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 150, "THEFT_HOUR": 0, "UCR": 625, "LAT": 39.9242733, "LNG": -75.169775454 }, "geometry": { "type": "Point", "coordinates": [ -75.169775453999989, 39.924273321000044 ] } },
+		{ "type": "Feature", "properties": { "DC_NUM": "016330", "DC_KEY": "201001016330", "LOCATION_B": "S 2100 MCKEAN ST", "THEFT_DATE": "2010\/04\/24", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 215, "THEFT_HOUR": 17, "UCR": 615, "LAT": 39.9270745, "LNG": -75.180905401 }, "geometry": { "type": "Point", "coordinates": [ -75.180905400999961, 39.927074527000059 ] } },
+		{ "type": "Feature", "properties": { "DC_NUM": "023568", "DC_KEY": "201001023568", "LOCATION_B": "2700 BLOCK SNYDER AVE", "THEFT_DATE": "2010\/06\/06", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 120, "THEFT_HOUR": 11, "UCR": 625, "LAT": 39.9271197, "LNG": -75.191034151 }, "geometry": { "type": "Point", "coordinates": [ -75.19103415099994, 39.927119746000074 ] } },
+		{ "type": "Feature", "properties": { "DC_NUM": "028556", "DC_KEY": "201001028556", "LOCATION_B": "2100 BLOCK S GARNET ST", "THEFT_DATE": "2010\/07\/08", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 200, "THEFT_HOUR": 15, "UCR": 615, "LAT": 39.9254113, "LNG": -75.178257356 }, "geometry": { "type": "Point", "coordinates": [ -75.178257355999961, 39.925411335000035 ] } },
+		{ "type": "Feature", "properties": { "DC_NUM": "029047", "DC_KEY": "201001029047", "LOCATION_B": "2100 BLOCK S 15TH ST", "THEFT_DATE": "2010\/07\/11", "THEFT_YEAR": 2010, "DC_DIST": 1, "STOLEN_VAL": 75, "THEFT_HOUR": 11, "UCR": 625, "LAT": 39.9241409, "LNG": -75.171456936 }, "geometry": { "type": "Point", "coordinates": [ -75.17145693599997, 39.924140875000035 ] } }
+	]
+}
+				</textarea>
+			</label>
+			
+			<label for="zoom">Zoom level
+				<input type="number" id="zoom" name="zoom" value="12" />
+			</label>
+			
+			<label for="x">X Coordinate
+				<input type="number" id="x" name="x" value="1192" />
+			</label>
+			
+			<label for="y">Y Coordinate
+				<input type="number" id="y" name="y" value="1551" />
+			</label>
+			
+			<input type="submit" value="Get that tile!" />
+		</form>
+		
+		<div id="output">
+			<img src="#" id="tile" />
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		var input = document.getElementById("uploaded-file");
+		document.getElementById("upload-form").addEventListener("submit", function(event) {
+			event.preventDefault();
+			
+			var zoom = document.getElementById("zoom").value;
+			var x = document.getElementById("x").value;
+			var y = document.getElementById("y").value;
+			var tilePath = zoom + "/" + x + "/" + y + ".png";
+			
+			var files = document.getElementById("uploaded-file").files;
+			if (files.length) {
+				var reader = new FileReader();
+				reader.addEventListener("load", function() {
+					loadTile(reader.result);
+				});
+				reader.readAsText(files[0]);
 			}
-		</textarea>
-		<input type="submit" value="Get a tile" />
-	</form>
+			else {
+				loadTile(document.getElementById("data").value);
+			}
+			
+			function loadTile(json) {
+				var xhr = new XMLHttpRequest();
+				xhr.addEventListener("load", function() {
+					var url = URL.createObjectURL(xhr.response);
+					document.getElementById("tile").src = url;
+					URL.revokeObjectURL(url);
+					document.getElementById("output").style.backgroundImage =
+						"url(\"http://d.tiles.mapbox.com/v3/tmcw.map-7s15q36b/" + tilePath + "\")";
+				});
+				xhr.open("POST", "/tiles/" + tilePath, true);
+				xhr.setRequestHeader("Content-Type", "application/json");
+				xhr.responseType = "blob";
+				xhr.send(json);
+			}
+		});
+	</script>
 </body>
 </html>
